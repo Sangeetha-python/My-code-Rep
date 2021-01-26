@@ -1,0 +1,150 @@
+
+
+#***********************************************************************************************************************
+#TC Author      - Sangeetha P
+#TC Description - Reverse each word in the input string, The order of the words will be unchanged.
+                 A word is made up of letters and/or numbers.Other characters (spaces, punctuation) will not be reversed.
+#Date           -23/1/2021
+#************************************************************************************************************************
+
+#------------------------------------------------------------------------------------------------------------------------
+#                                         USE CASE-input hardcoded using regex
+#------------------------------------------------------------------------------------------------------------------------
+
+import re
+
+def reverse_each_word(sentence):                                      #sentence is the input string which has to be reversed
+     temp=re.findall(r"[\w']+|[.,!-;?\"\'' ']", sentence)             #using regex findall,convert string in to list including spaces
+     finalstring=""                                                   #initialize a str variable called finalstring
+     for i in range(len(temp)):                                       #loop in the list
+         value=temp[i]                                           
+         value1=value[::-1]                                           #reverse the value
+         finalstring=finalstring+value1                               #concatenate with finalstring 
+     return finalstring                                               #return finalstring to the caller.
+ 
+def main():
+     test_str = "String;   2be reversed"                              #string to be reversed.
+     assert reverse_each_word(test_str) == "gnirtS;   eb2 desrever"   #assert the returned string with test_str
+     return 0
+
+
+#------------------------------------------------------------------------------------------------------------------------
+#                                         USE CASE-input from user using regex
+#------------------------------------------------------------------------------------------------------------------------
+
+import re
+
+def reverse_each_word(sentence):                                      #sentence is the input string which has to be reversed
+     temp=re.findall(r"[\w']+|[.,!-;?\"\'' ']", sentence)             #using regex findall,convert string in to list including spaces
+     finalstring=""                                                   #initialize a str variable called finalstring
+     for i in range(len(temp)):                                       #loop in the list
+         value=temp[i]                                           
+         value1=value[::-1]                                           #reverse the value
+         finalstring=finalstring+value1                               #concatenate with finalstring 
+     print (finalstring)
+     return finalstring                                               #return finalstring to the caller.
+
+def enterStringToRev():
+    stringToRev= input("Enter the string to be reversed")             #Get input from user not hardcoded
+    return stringToRev                                                #return the user input to caller
+ 
+test_str = enterStringToRev()                                         #function call to get input from user and store in a variable
+
+def main():
+     assert reverse_each_word(test_str) == "gnirtS;   eb2 desrever"   #assert the returned string with test_str
+     return 0
+
+
+
+
+#------------------------------------------------------------------------------------------------------------------------
+#                        USE CASE-without using regex, included all possibility of string punctuation occurrence
+#------------------------------------------------------------------------------------------------------------------------
+
+def reverse_each_word(sentence):                                         #sentence is passed as arg type- str
+    newWords=sentence.split(" ")                                         #split the string, including white spaces
+    newsentence=""
+    puntuation= [',',';','.',':','-','!']                                #This is a list, any no of punctuations can be added to check
+    list1=[]                                                             #initiating an empty list to store the index of punc marks
+    for ind in range(len(newWords)):                                     #looping through the newWords list.
+        value=newWords[ind]            
+        for i in range(len(puntuation)):                                 #for loop to find all the punc marks's indexes
+            if (puntuation[i]) in value:                
+                mark=puntuation[i]
+                indexOfPunctuation=value.index(mark)
+                list1.append(indexOfPunctuation)   
+        if list1==[]:                                                    #if no punctuation mark is found, checks for " " or normal str
+            if value == "":
+                newsentence=newsentence+" "                
+            else:
+                value1=value[::-1]
+                newsentence=newsentence+value1+" "                            
+        if list1!=[]:                                                    #if punc marks found, func call to puncScenario check.
+            newsentence=punctuationScenario(list1,newsentence,value)     #newsentence is returned from caller           
+            list1.clear()                                                #clearing the list1.
+        
+    print (newsentence)        
+    return newsentence.rstrip()                                          #strip the last space and return the final string to caller
+
+def punctuationScenario(list1,newsentence,value):                        #called when punc mark is present in a string
+    indexval=0                                                           #indexval and count are used for fetching string index values
+    count=0
+    for ind in range(0,len(list1)):
+        count = count+1
+        value_length=len(value)
+        finalvalue=value_length-1        
+        if len(list1)==1:                                                #if len list1 is 1, meaning only one punc is present in word
+            if (list1[ind]) == (finalvalue):                             #checks if punc mark is in last of string
+                temp=(list1[ind])
+                mark=value[temp]
+                newval=value[:-1]
+                newval1=newval[::-1]
+                newsentence=newsentence+newval1+mark+" "                
+                return newsentence
+            if (list1[ind]) == 0:                                        #checks if the punc mark is in start of string
+                mark=value[0]
+                newval=value[1:value_length]
+                newval1=newval[::-1]
+                newsentence=newsentence+mark+newval1+" "                
+                return newsentence
+            if (list1[ind])!="0" or (list1[ind])!=(finalvalue):          #checks if punc mark is in middle of string
+                occurrence=list1[ind]
+                newval=value[0:occurrence]
+                newval1=newval[::-1]
+                mark = value[occurrence]
+                newval2=value[occurrence+1:value_length]
+                newval3=newval2[::-1]
+                newsentence=newsentence+newval1+mark+newval3+" "                
+                return newsentence
+        if len(list1)!=1:                                                #if more than 1 punc mark is present in a substring
+            occurrence=int(list1[ind])
+            newval=value[indexval:occurrence]            
+            newval1=newval[::-1]            
+            mark = value[occurrence]            
+            indexval=occurrence+1
+            newsentence=newsentence+newval1+mark
+            if int(count)==int(len(list1)):
+                if int(occurrence)== int(len(value)-1):
+                    newsentence=newsentence+" "
+                    return newsentence   
+                else:
+                    restofstring=value[(occurrence+1):value_length]
+                    rev_restofstring=restofstring[::-1]
+                    newsentence=newsentence+rev_restofstring+" "
+                    return newsentence  
+        
+            
+#modified test_str to add  ;-(2 instances of punc), !first instance, last instance',' and middle instance as also:-testingmiddle
+def main():
+     test_str = "String;-   !2be reversed, also:-testingmiddle"         #input string
+     finvalue= reverse_each_word(test_str)
+     if finvalue == "gnirtS;-   !eb2 desrever, osla:-elddimgnitset":    #check using if loop, can also use assert function instead
+         print ("matched")
+         return finvalue
+
+finalvalue=main()
+
+
+
+
+
